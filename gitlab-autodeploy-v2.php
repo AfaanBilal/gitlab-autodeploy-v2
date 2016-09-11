@@ -34,14 +34,25 @@ define('DEPLOY_DIR',        '');
 // Branch name
 define('BRANCH',            'master');
 
-// LOG ? (FALSE or 'filename')
+// Logging 
+//
+// if you don't want logging, just set to FALSE
+// else set a filename or leave as is.
 define('LOGFILE',           'gitlab-autodeploy-v2.log');
 
-// TimeZone (for LOG)
+// TimeZone (for Logging)
 date_default_timezone_set("Asia/Kolkata");
 
+// The GitLab API endpoint for project repositories
 define('API_ENDPOINT',      'https://gitlab.com/api/v3/projects/'    . REPO_ID       . '/repository');
+
+// API URL for comparing two commits
+//
+// We need the 'diffs' part of the response 
+// to check what files have changed
 define('API_COMPARE',       API_ENDPOINT . '/compare?private_token=' . PRIVATE_TOKEN);
+
+// API URL for getting file data
 define('API_FILES',         API_ENDPOINT . '/files?private_token='   . PRIVATE_TOKEN . '&ref=' . BRANCH . '&file_path=');
 
 // Logging
@@ -69,15 +80,23 @@ function writeLog($data)
     fclose($fh);
 }
 
+// send some response to the GitLab server
+// GitLab doesn't care what we send
+// but just to be nice :)
 echo "{status:success}";
 
-// get webhook data
+// get the webhook data send by GitLab
 $json = file_get_contents('php://input');
 $data = json_decode($json, TRUE);
 
 // send compare request
+//
+// $data['before'] contains the starting commit sha1 of the push and
+// $data['after'] contains the ending commit sha1 of the push
+// so we just compare the two to see what has changed
 $compareData = json_decode(file_get_contents(API_COMPARE . '&from=' . $data['before'] . '&to=' . $data['after']), TRUE);
 
+// if there is an error, log it and exit
 if (in_array("message", array_keys($compareData)))
 {
     writeLog("Error: ".$compareData['message']);
@@ -88,6 +107,7 @@ if (in_array("message", array_keys($compareData)))
 $filesRealData = [];
 foreach ($compareData['diffs'] as $v) 
 {
+    // Log every changed file
     writeLog(
         " == FileChanged == \r\n".
         "Path:    {$v['old_path']} => {$v['new_path']}\r\n".
@@ -99,29 +119,39 @@ foreach ($compareData['diffs'] as $v)
     
     if ($v['deleted_file'])
     {
+        // the file has been deleted in the repo
+        // so just delete it here as well and continue
+        // we don't need to do anything else with it
         @unlink($v['old_path']); 
         continue;
     }
     else if ($v['renamed_file'])
     {
+        // the file has been renamed in the repo
+        // so just delete the old named file
+        // and treat the renamed one as a new file
         @unlink($v['old_path']);
     }
     
+    // get the actual file data
     $fileData = json_decode(file_get_contents(API_FILES . $v['new_path']), TRUE);
     
+    // if there is an error, log it and continue
     if (in_array("message", array_keys($fileData)))
     {
         writeLog("Error: ".$fileData['message']);
         continue;
     }
     
+    // collect the files to be written to disk
+    // and decode the content (it's base64 encoded)
     $filesRealData[] = [
       'path' => $fileData['file_path'],
       'content' => base64_decode($fileData['content'])
     ];
 }
 
-// write files
+// write files to disk
 foreach ($filesRealData as $v) 
 {
     if (!file_exists(dirname($v['path'])))
@@ -130,4 +160,5 @@ foreach ($filesRealData as $v)
     file_put_contents(DEPLOY_DIR . $v['path'], $v['content']);
 }
 
+// and we are done!
 writeLog("Deployment complete.");
