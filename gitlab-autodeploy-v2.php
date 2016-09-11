@@ -88,6 +88,15 @@ if (in_array("message", array_keys($compareData)))
 $filesRealData = [];
 foreach ($compareData['diffs'] as $v) 
 {
+    writeLog(
+        " == FileChanged == \r\n".
+        "Path:    {$v['old_path']} => {$v['new_path']}\r\n".
+        "New:     {$v['new_file']}\r\n".
+        "Renamed: {$v['renamed_file']}\r\n".
+        "Deleted: {$v['deleted_file']}\r\n".
+        " == =========== =="
+        );
+    
     if ($v['deleted_file'])
     {
         @unlink($v['old_path']); 
