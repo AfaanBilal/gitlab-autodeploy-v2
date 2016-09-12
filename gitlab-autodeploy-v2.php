@@ -80,6 +80,21 @@ function writeLog($data)
     fclose($fh);
 }
 
+// delete files
+//
+// delete the file and if the containing
+// folder is empty, remove it as well.
+function deleteFile($path)
+{
+    @unlink($path); 
+        
+    $dir = dirname($path);
+
+    // if the folder is empty now, delete it as well
+    if (count(glob("{$dir}/*")) === 0)
+        rmdir($dir);
+}
+
 // send some response to the GitLab server
 // GitLab doesn't care what we send
 // but just to be nice :)
@@ -122,7 +137,9 @@ foreach ($compareData['diffs'] as $v)
         // the file has been deleted in the repo
         // so just delete it here as well and continue
         // we don't need to do anything else with it
-        @unlink($v['old_path']); 
+        
+        deleteFile($v['old_path']);
+
         continue;
     }
     else if ($v['renamed_file'])
@@ -130,7 +147,8 @@ foreach ($compareData['diffs'] as $v)
         // the file has been renamed in the repo
         // so just delete the old named file
         // and treat the renamed one as a new file
-        @unlink($v['old_path']);
+
+        deleteFile($v['old_path']);
     }
     
     // get the actual file data
