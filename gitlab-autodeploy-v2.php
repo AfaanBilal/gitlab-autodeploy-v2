@@ -172,7 +172,7 @@ foreach ($compareData['diffs'] as $v)
 // write files to disk
 foreach ($filesRealData as $v) 
 {
-    if (!file_exists(dirname($v['path'])))
+    if (!file_exists(DEPLOY_DIR . dirname($v['path'])))
         mkdir(dirname($v['path']), 0777, TRUE);
     
     file_put_contents(DEPLOY_DIR . $v['path'], $v['content']);
