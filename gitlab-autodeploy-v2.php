@@ -152,7 +152,7 @@ foreach ($compareData['diffs'] as $v)
     }
     
     // get the actual file data
-    $fileData = json_decode(file_get_contents(API_FILES . $v['new_path']), TRUE);
+    $fileData = json_decode(file_get_contents(API_FILES . urlencode($v['new_path'])), TRUE);
     
     // if there is an error, log it and continue
     if (in_array("message", array_keys($fileData)))
