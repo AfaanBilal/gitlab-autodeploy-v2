@@ -4,7 +4,7 @@ GitLab AutoDeploy v2
 Author: **Afaan Bilal ([@AfaanBilal](https://github.com/AfaanBilal))**   
 Author URL: **[Google+][1]**
 
-##### Project Page: [afaan.ml/gitlab-autodeploy](https://afaan.ml/gitlab-autodeploy)
+##### Project Page: [afaanbilal.github.io/gitlab-autodeploy](https://afaanbilal.github.io/gitlab-autodeploy)
 
 ## Introduction
 **GitLab AutoDeploy v2** is a PHP script to easily deploy web app repositories on `git push`. It 
