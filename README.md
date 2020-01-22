@@ -1,8 +1,7 @@
 GitLab AutoDeploy v2
 ==============
 
-Author: **Afaan Bilal ([@AfaanBilal](https://github.com/AfaanBilal))**   
-Author URL: **[Google+][1]**
+Author: **[Afaan Bilal](https://afaan.me)**  
 
 ##### Project Page: [afaan.me/gitlab-autodeploy](https://afaan.me/gitlab-autodeploy)
 
@@ -57,7 +56,6 @@ Thanks!
 **GitLab AutoDeploy v2** is released under the MIT License.
 Check out the full license [here](LICENSE).
 
-[1]: https://google.com/+AfaanBilal                   "Afaan Bilal"
 [2]: https://github.com/AfaanBilal/github-autodeploy  "GitHub AutoDeploy"
 [3]: #getting-your-private-token-and-project-id       "Getting your Private Token and Project ID"
 [4]: #adding-a-webhook                                "Adding a WebHook"
